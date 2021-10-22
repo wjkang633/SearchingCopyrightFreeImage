@@ -1,5 +1,6 @@
 package woojin.android.kotlin.project.searchingcopyrightfreeimage
 
+import android.app.WallpaperManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
@@ -167,6 +168,30 @@ class MainActivity : AppCompatActivity() {
                     ) {
                         //미디어 스토어에 비트맵 저장
                         saveBitmapToMediaStore(resource)
+
+                        val wallPaperManager = WallpaperManager.getInstance(this@MainActivity)
+                        val snackBar = Snackbar.make(
+                            binding.root,
+                            "다운로드 완료",
+                            Snackbar.LENGTH_SHORT
+                        )
+
+                        if (wallPaperManager.isWallpaperSupported &&
+                            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && wallPaperManager.isSetWallpaperAllowed)
+                        ) {
+                            snackBar.setAction("배경 화면으로 저장") {
+                                try {
+                                    wallPaperManager.setBitmap(resource)
+                                } catch (exception: java.lang.Exception) {
+                                    Snackbar.make(binding.root, "배경화면 저장 실패", Snackbar.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+
+                            snackBar.duration = Snackbar.LENGTH_INDEFINITE
+                        }
+
+                        snackBar.show()
                     }
 
                     override fun onLoadStarted(placeholder: Drawable?) {
@@ -223,8 +248,6 @@ class MainActivity : AppCompatActivity() {
             imageDetails.put(MediaStore.Images.Media.IS_PENDING, 0)
             resolver.update(imageUri, imageDetails, null, null)
         }
-
-        Snackbar.make(binding.root, "다운로드 완료", Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {
