@@ -13,8 +13,16 @@ import woojin.android.kotlin.project.searchingcopyrightfreeimage.databinding.Ite
 class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
 
     var photos: List<PhotoResponse> = emptyList()
+    var onClickPhoto:(PhotoResponse)->Unit ={}
 
     inner class ViewHolder(private val binding: ItemPhotoBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener {
+                onClickPhoto(photos[adapterPosition])
+            }
+        }
+
         fun bind(photo: PhotoResponse) {
 
             //사진 크기 미리 산정
